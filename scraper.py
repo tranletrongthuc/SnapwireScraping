@@ -1,33 +1,64 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 import time
+import os
 
 
 class CollectionScraper:
     def __init__(self):
-        self.collection_url = 'https://community.snapwire.co/collections'
+        self.collections_url = 'https://community.snapwire.co/collections'
         self.collections = []
         self.browser_path = './chromedriver.exe'
+        self.browser = None
+        self.scrapped_data_dir = './scrapped_data'
+        self.init_browser()
 
-    def get_collection(self):
-        browser = webdriver.Chrome(executable_path=self.browser_path)
-        browser.get(self.collection_url)
-        self.collections = browser.find_elements_by_class_name('request-title')
+    def init_browser(self):
+        self.browser = webdriver.Chrome(executable_path=self.browser_path)
 
+    def find_element_by_class_name_until_end(self, class_name, loop_time = 5, limit_result = None):
+        result = []
+        check_height = self.browser.execute_script("return document.body.scrollHeight;")
         while (True):
-            browser.execute_script("window.scrollTo(0, 5000);")
-            time.sleep(5)
-            new_collections = browser.find_elements_by_class_name('request-title')
-            if len(new_collections) != len(self.collections):
-                self.collections = new_collections
+            self.browser.execute_script(f"window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(loop_time)
+            new_height = self.browser.execute_script("return document.body.scrollHeight;")
+            # print(f"Check height: {check_height} - new height {new_height}")
+            if check_height != new_height:
+                check_height = new_height
+                result = self.browser.find_elements_by_class_name(class_name)
+                # print(f"{class_name} - {loop_time} - {len(result)} photos found.")
             else:
                 break
 
-        self.collections = [collection_name.text for collection_name in self.collections]
-        print(self.collections)
+        return result
 
+    def check_existing_wrapped_file(self, file_name):
+        return os.path.exists(os.path.join(self.scrapped_data_dir, file_name))
+
+    def get_collection(self):
+        self.browser.get(self.collections_url)
+        # self.collections = self.find_element_by_class_name_until_end('request-title')
+        # self.collections = self.find_element_by_class_name_until_end('sw-card sw-card-request sw-card-background collection box')
+        self.collections = self.find_element_by_class_name_until_end('grid-item')
+
+        self.collections = [{   'collection_name': collection.find_elements_by_class_name('request-title')[0].text,
+                                'collection_url': collection.find_elements_by_tag_name('a')[0].get_attribute('href'),
+                                'collection_id': collection.find_elements_by_class_name('request-title')[0].text.replace(" ","-").lower(),
+                             } for collection in self.collections]
+        print(self.collections)
+        return self.collections
+
+    def get_all_photos_of_collection(self, collection_url):
+        self.browser.get(collection_url)
+        photo_wrappers = self.find_element_by_class_name_until_end('photo-wrapper', 5, 500)
+        all_photos = []
+        for wrapper in photo_wrappers:
+            photo_url = wrapper.find_elements_by_tag_name('a')[0].get_attribute('href')
+            all_photos.append(photo_url.split('/')[-1])
+
+        return all_photos
 
 class DetailPhotoScraper:
 
