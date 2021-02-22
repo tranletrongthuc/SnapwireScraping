@@ -27,15 +27,35 @@ def demo_get_collections():
             collections = json.load(json_file)
 
     collection_photos = {}
-    for collection in collections :
+    detail_photos_dir = os.path.join(collection_scraper.scrapped_data_dir,'detail_photos')
+    if not os.path.exists(detail_photos_dir):
+        os.mkdir(detail_photos_dir)
+
+    for collection in collections[:5] :
         collection_id, collection_url = collection['collection_id'], collection['collection_url']
+        collection_dir = os.path.join(detail_photos_dir, collection_id)
+
+        if not os.path.exists(collection_dir):
+            os.mkdir(collection_dir)
+
         all_photos = collection_scraper.get_all_photos_of_collection(collection_url)
         collection_photos[collection_id] = all_photos
         print(f"{collection_id}: {len(all_photos)} photos found.")
-
-
         with open(os.path.join(collection_scraper.scrapped_data_dir,'all_photo.json'), 'w', encoding='utf-8') as json_file:
             json.dump(collection_photos, json_file)
+
+        print(f"Start get all photos from {collection_id} collection")
+        total_results = {}
+
+        for photo_name in all_photos:
+            detail_photo_scraper = DetailPhotoScraper(photo_name)
+
+            saving_photo_path = os.path.join(collection_scraper.scrapped_data_dir,'detail_photos', collection_id, photo_name) + '.jpg'
+            detail_photo_scraper.get_detail(saving_photo_path)
+
+            total_results[photo_name] = detail_photo_scraper.__dict__
+            with open(os.path.join(collection_scraper.scrapped_data_dir, f'{collection_id}.json'), 'w', encoding='utf-8') as json_file:
+                json.dump(total_results, json_file)
 
 if __name__ == "__main__":
     demo_get_collections()

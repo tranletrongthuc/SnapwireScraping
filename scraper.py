@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 import os
-
+import urllib.request
 
 class CollectionScraper:
     def __init__(self):
         self.collections_url = 'https://community.snapwire.co/collections'
         self.collections = []
-        self.browser_path = './chromedriver.exe'
+        self.browser_path = './operadriver.exe'
         self.browser = None
         self.scrapped_data_dir = './scrapped_data'
         self.init_browser()
@@ -72,7 +72,7 @@ class DetailPhotoScraper:
         self.photo_url = ''
         self.snapwire_detail = {}
 
-    def get_detail(self):
+    def get_detail(self, saving_path):
 
         page_content = requests.get(self.page_url).text
 
@@ -80,24 +80,35 @@ class DetailPhotoScraper:
 
         # get Like-count
         like_count_soup = soup.find('h4', {"class": "light like-count"})
-        self.like_count = int(like_count_soup.text)
+        if like_count_soup is not None:
+            try:
+                self.like_count = int(like_count_soup.text)
+            except:
+                pass
 
         # get Photographer info
         photographer_soup = soup.find('div','photographer-info').find('h4')
-        self.photographer = photographer_soup.text
+        if photographer_soup is not None:
+            self.photographer = photographer_soup.text
 
         detail_info_soup = soup.find("section", {"class": "detail-info"})
-        # get Keywords and caption
-        keywork_area_soup = [area for area in detail_info_soup.findAll('div', {"class": "col-md-8"}) if (area.find('h5') is not None and area.find('h5').text.lower().__contains__('keywords'))]
-        if len(keywork_area_soup) > 0:
-            self.keyworks = [keywork_soup.text for keywork_soup in keywork_area_soup[0].find_all("a")]
+        if detail_info_soup is not None:
+            # get Keywords and caption
+            keywork_area_soup = [area for area in detail_info_soup.findAll('div', {"class": "col-md-8"}) if (area.find('h5') is not None and area.find('h5').text.lower().__contains__('keywords'))]
+            if len(keywork_area_soup) > 0:
+                self.keyworks = [keywork_soup.text for keywork_soup in keywork_area_soup[0].find_all("a")]
 
-        caption = detail_info_soup.find('p', {'id':'caption-text'}).text
-        caption = caption.encode('ascii', 'ignore').decode('utf-8')
-        self.caption = caption.strip()
+            caption = detail_info_soup.find('p', {'id':'caption-text'})
+            if caption is not None:
+                caption = caption.text
+                caption = caption.encode('ascii', 'ignore').decode('utf-8')
+                self.caption = caption.strip()
 
         # get Photo URL:
         photo_url_soup = soup.find('img', {"class": "margin-bottom"})
-        self.photo_url = photo_url_soup.attrs['src']
+        if photographer_soup is not None:
+            self.photo_url = photo_url_soup.attrs['src']
+            urllib.request.urlretrieve(self.photo_url, saving_path)
+
         # get Photo detail
 
