@@ -2,3 +2,5 @@
 **/__pycache__/*
 /scrapped_data/*
 multi-label-classification-resnet50-tf/logs/*
+multi-label-classification-resnet50-tf/run_confirmator.py
+multi-label-classification-resnet50-tf/predict.py
