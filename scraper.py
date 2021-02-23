@@ -96,7 +96,7 @@ class DetailPhotoScraper:
             # get Keywords and caption
             keywork_area_soup = [area for area in detail_info_soup.findAll('div', {"class": "col-md-8"}) if (area.find('h5') is not None and area.find('h5').text.lower().__contains__('keywords'))]
             if len(keywork_area_soup) > 0:
-                self.keyworks = [keywork_soup.text for keywork_soup in keywork_area_soup[0].find_all("a")]
+                self.keyworks = [keywork_soup.text.replace(" ", "-").lower() for keywork_soup in keywork_area_soup[0].find_all("a")]
 
             caption = detail_info_soup.find('p', {'id':'caption-text'})
             if caption is not None:

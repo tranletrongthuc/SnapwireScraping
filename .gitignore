@@ -1,3 +1,4 @@
-/.idea/*
-/__pycache__/*
+**/.idea/*
+**/__pycache__/*
 /scrapped_data/*
+multi-label-classification-resnet50-tf/logs/*
