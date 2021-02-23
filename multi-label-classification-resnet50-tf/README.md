@@ -40,12 +40,6 @@ Plotted metrics are:
 tensorboard --logdir=logs
 ```
 
-### Prediction
-```sh
-python predict.py -img=[path to fodler with images awaiting prediction] -f=[path to dataset folder] 
--mod=[path to saved model folder] -d=[optional: if use TFDebugger]
-```
-
 ## Project Structure
     .
     ├── data                       
@@ -57,5 +51,4 @@ python predict.py -img=[path to fodler with images awaiting prediction] -f=[path
     ├── logs                        # TensorBoard Logs         
     ├── training                    # Model's Weights
     ├── config.json                 # Configuration File
-    ├── train.py                    # Training Script
-    └── predict.py                  # Preidction Script
+    └── train.py                    # Training Script
