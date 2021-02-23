@@ -2,24 +2,8 @@
 Custom implementation of ResNet50 Image Classification model using pure TensorFlow 
 
 ## Requirements
-* Python 3.7
-* Tensorflow 1.x
-
-## Dataset Requirements
-Dataset Folder should only have folders of each class. Dataloader will automatically split the dataset into training and validation data in 80:20 ratio.  
-**Example:**
-
-    .
-    └── DatasetFolder
-        ├── ClassOne                 
-        │   ├── FirstImage.jpg                       
-        │   ├── SecondImage.jpg                 
-        │   └── ...    
-        ├── ClassTwo  
-        │   └── ...    
-        ├── ClassThree               
-        │   └── ...    
-        └── ...
+* Python 3.6 or higher
+* Tensorflow 1.x or 2.x
 
 ## Usage
 
