@@ -18,12 +18,19 @@ def demo_get_detail_photos():
 
 def demo_get_collections():
     collection_scraper = CollectionScraper()
-    if not collection_scraper.check_existing_wrapped_file("collections.json"):
+
+    detail_collections_dir = os.path.join(collection_scraper.scrapped_data_dir,'detail_collections')
+    if not os.path.exists(detail_collections_dir):
+        os.mkdir(detail_collections_dir)
+
+    detail_collections_path = os.path.join(detail_collections_dir,'collections.json')
+
+    if not collection_scraper.check_existing_wrapped_file(detail_collections_path):
         collections = collection_scraper.get_collection()
-        with open(os.path.join(collection_scraper.scrapped_data_dir,'collections.json'), 'w', encoding='utf-8') as json_file:
+        with open(detail_collections_path, 'w', encoding='utf-8') as json_file:
             json.dump(collections, json_file)
     else:
-        with open(os.path.join(collection_scraper.scrapped_data_dir,'collections.json'), 'r', encoding='utf-8') as json_file:
+        with open(detail_collections_path, 'r', encoding='utf-8') as json_file:
             collections = json.load(json_file)
 
     collection_photos = {}
@@ -31,7 +38,7 @@ def demo_get_collections():
     if not os.path.exists(detail_photos_dir):
         os.mkdir(detail_photos_dir)
 
-    for collection in collections[:5] :
+    for collection in collections[:2] :
         collection_id, collection_url = collection['collection_id'], collection['collection_url']
         collection_dir = os.path.join(detail_photos_dir, collection_id)
 

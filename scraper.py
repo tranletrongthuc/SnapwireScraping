@@ -34,8 +34,8 @@ class CollectionScraper:
 
         return result
 
-    def check_existing_wrapped_file(self, file_name):
-        return os.path.exists(os.path.join(self.scrapped_data_dir, file_name))
+    def check_existing_wrapped_file(self, detail_collections_path):
+        return os.path.exists(detail_collections_path)
 
     def get_collection(self):
         self.browser.get(self.collections_url)
