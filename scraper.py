@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from webdriver_manager.opera import OperaDriverManager
 import time
 import os
 import urllib.request
@@ -15,7 +16,10 @@ class CollectionScraper:
         self.init_browser()
 
     def init_browser(self):
-        self.browser = webdriver.Chrome(executable_path=self.browser_path)
+        if os.path.exists(self.browser_path):
+            self.browser = webdriver.Opera(executable_path=self.browser_path)
+        else:
+            self.browser = webdriver.Opera(executable_path=OperaDriverManager().install())
 
     def find_element_by_class_name_until_end(self, class_name, loop_time = 5, limit_result = None):
         result = []
