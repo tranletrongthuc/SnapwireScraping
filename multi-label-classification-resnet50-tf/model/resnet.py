@@ -316,7 +316,7 @@ class ResNet50(object):
                 train_step = self.train_one_epoch(sess, saver, self.train_iterator_init_op, train_writer, epoch, train_step)
                 val_step = self.eval_once(sess, self.train_iterator_init_op, val_writer, epoch, val_step)
                 # Save Each Epoch
-                if epoch % 10 == 0:
+                if epoch % 30 == 0:
                     os.mkdir("training/epoch{}".format(epoch))
                     os.mkdir("training/epoch{}/checkpoint".format(epoch))
                     save_path = saver.save(sess, "training/epoch{}/checkpoint/model.ckpt".format(epoch))
