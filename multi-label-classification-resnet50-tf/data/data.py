@@ -94,21 +94,28 @@ def load_set_multiple_labels(detail_collection_dir, img_dir, only_dict=False):
 
     classes = []
     file_infos = []
+    img_names = []
     collections = os.listdir(detail_collection_dir)
     for collection in collections:
         with open(os.path.join(detail_collection_dir, collection), 'r', encoding='utf-8') as json_file:
             collection_data = json.load(json_file)
         collection_classes = []
+
         for img_name, img_info in collection_data.items():
-            keywords = img_info['keyworks']
-            collection_classes.extend(keywords)
-            file_infos.append({
-                'file_path': os.path.join(img_dir,collection.split('.')[0], img_name + '.jpg'),
-                'keywords':keywords
-            })
+            if img_name not in img_names:
+                keywords = img_info['keyworks']
+                collection_classes.extend(keywords)
+
+                file_info = {
+                    'file_path': os.path.join(img_dir,collection.split('.')[0], img_name + '.jpg'),
+                    'keywords':keywords
+                }
+                if os.path.exists(file_info['file_path']):
+                    file_infos.append(file_info)
+                img_names.append(img_name)
+
         # collection_classes = [keyword.replace(" ", "-").replace(" - ", "-").lower() for keyword in collection_classes]
         classes += collection_classes
-
     # remove duplicates
     classes = list(dict.fromkeys(classes))
     n_classes = len(classes)
